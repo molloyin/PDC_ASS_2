@@ -4,11 +4,15 @@
  */
 package Display;
 
-import Safe.LockedSafe;
 import Safe.Safe;
 import Safe.UnlockedSafe;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 public class SafeRunnable {
     
@@ -16,11 +20,20 @@ public class SafeRunnable {
 
     public static void main(String[] args) {
         
-        // make an endLoop() function
-
+        JFrame frame = new JFrame("Safe");
+        JPanel panel = new JPanel();
+        JButton b = new JButton("Close");
+        panel.add(b);
+        frame.add(panel);
+        b.addActionListener(new CloseListener());
+        frame.setDefaultCloseOperation(3);
+        frame.getContentPane().add(panel);
+        frame.setSize(1000, 1000);
+        frame.setVisible(true);
+        frame.setLocationRelativeTo(null);
+           
         Safe safe;
         int safeChoice = -1;
-        int forbiddenOption = 0;
         int selected = -1;
         String query = "";
         Scanner scan = new Scanner(System.in);
@@ -41,7 +54,8 @@ public class SafeRunnable {
         } while (safeChoice != 0 && safeChoice != 1);
 
         if (safeChoice == 0) {
-            safe = new LockedSafe();
+            System.out.println("Locked Safe is banned");
+            safe = new UnlockedSafe();
         } else {
             safe = new UnlockedSafe();
         }
@@ -149,5 +163,16 @@ public class SafeRunnable {
             }
         } while (!acceptable);
         return out;
+    }
+
+    private static class CloseListener implements ActionListener {
+
+        public CloseListener() {
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            System.exit(0);
+        }
     }
 }

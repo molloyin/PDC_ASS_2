@@ -4,41 +4,43 @@
  */
 package SafeInteraction;
 
-import Contents.HashMapContainer;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
-import java.util.Map;
+import Safe.UnlockedSafe;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Deposit extends SafeInteraction implements IDeposit {
-    
+
     String toAppend;
-    String fileName;
-    
-    public Deposit(String toAppend, String fileName) {
-        this.toAppend = toAppend;
-        this.fileName = fileName;
-    }
-    
-    @Override
-    public Map execute() {
-        HashMapContainer hm = new HashMapContainer(fileName);
-        return hm.update();
+    Connection conn;
+    Statement stat;
+
+    public Deposit(String toAdd) {
+        this.toAppend = toAdd;
+        conn = UnlockedSafe.safe.getConnection();
+        try {
+            stat = conn.createStatement();
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
     }
 
     @Override
-    public boolean requestDeposit() {
+    public void execute() {
         try {
-            FileOutputStream fos = new FileOutputStream(fileName, true);
-            PrintWriter pw = new PrintWriter(fos);
-            pw.println(toAppend);
-            pw.close();
-            return true;
-        } catch (FileNotFoundException ex) {
+            stat.executeUpdate("INSERT INTO SAFECONTENTS VALUES (" + toAppend + ")");
+        } catch (SQLException ex) {
             Logger.getLogger(Deposit.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return false;
+        UnlockedSafe.safe.closeConnections();
+    }
+
+    @Override
+    // redundant due to emeddedDB implementation, relevant in other
+    // implementations
+    public boolean requestDeposit() {
+        return true;
     }
 }

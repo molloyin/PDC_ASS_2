@@ -4,19 +4,23 @@
  */
 package Safe;
 
-import Contents.HashMapContainer;
+import Contents.EmbeddedDB;
 import SafeInteraction.Deposit;
 import SafeInteraction.Withdraw;
-import java.util.Map;
+import java.sql.Connection;
+import java.sql.Statement;
+import java.sql.SQLException;
 
 public class UnlockedSafe extends Safe {
 
-    private Map safe;
-    private final String READFILE = "Sample Text.txt";
-    private boolean open = false;
+    private boolean open = true;
+    public static EmbeddedDB safe;
+    Connection conn;
+    Statement stat;
 
     public UnlockedSafe() {
-        safe = new HashMapContainer(READFILE).update();
+        safe = new EmbeddedDB();
+        createTable();
     }
 
     @Override
@@ -32,12 +36,12 @@ public class UnlockedSafe extends Safe {
     @Override
     public int store(String toAppend) {
         if (open) {
-            Deposit d = new Deposit(toAppend, READFILE);
+            Deposit d = new Deposit(toAppend);
             if (d.requestDeposit()) {
-                safe = d.execute();
+                d.execute();
                 return 0;
             } else {
-                System.out.println("Cannot append input string to file.");
+                System.out.println("Cannot deposit item in safe.");
                 return -1;
             }
         } else {
@@ -48,11 +52,10 @@ public class UnlockedSafe extends Safe {
 
     @Override
     public int remove(String toRemove) {
-        // ran out of time, see comments in Withdraw.java for plan
-        if(open) {
-            Withdraw w = new Withdraw(toRemove, READFILE);
+        if (open) {
+            Withdraw w = new Withdraw(toRemove);
             if (w.requestWithdraw()) {
-                safe = w.execute();
+                //safe = w.execute();
                 return 0;
             } else {
                 System.out.println("Cannot remove query from file.");
@@ -72,6 +75,22 @@ public class UnlockedSafe extends Safe {
     @Override
     public void printContents() {
         System.out.println(safe.toString());
+    }
+
+    private void createTable() {
+        this.conn = safe.getConnection();
+        try {
+            stat = conn.createStatement();
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        try {
+            stat.addBatch("CREATE  TABLE SAFECONTENTS  (OBJECT   VARCHAR(50))");
+            stat.executeBatch();
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        safe.closeConnections();
     }
 
 }

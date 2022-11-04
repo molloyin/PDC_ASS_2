@@ -5,10 +5,8 @@
 
 package SafeInteraction;
 
-import java.util.Map;
-
 
 public abstract class SafeInteraction {
 
-    public abstract Map execute();
+    public abstract void execute();
 }

@@ -12,6 +12,7 @@ public final class EmbeddedDB implements IDB {
     private static final String USER_NAME = ""; 
     private static final String PASSWORD = ""; 
     private static final String URL = "jdbc:derby:Safe; create=true";  
+    static EmbeddedDB db;
     Connection conn;
 
     public EmbeddedDB() {
@@ -19,7 +20,7 @@ public final class EmbeddedDB implements IDB {
     }
 
     public static void main(String[] args) {
-        EmbeddedDB db = new EmbeddedDB();
+        db = new EmbeddedDB();
         System.out.println(db.getConnection());
     }
 
@@ -51,5 +52,6 @@ public final class EmbeddedDB implements IDB {
             }
         }
     }
+
 
 }
