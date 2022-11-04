@@ -1,4 +1,0 @@
-cash, 1000:
-passport, 2:
-art, 3:
-crypto,1000:

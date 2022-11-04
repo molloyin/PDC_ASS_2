@@ -11,19 +11,13 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class SafeRunnable {
+    
+    private static boolean running = true;
 
     public static void main(String[] args) {
         
-        // program creates a hashmap using a txt file. When adding to or 
-        // withdrawing from the bank, I'm rewriting the text file, then 
-        // remaking the map using the altered file.
-        // nothing is broken, and everything is working except for Withdraw
-        // and the password interation with the locked safe. It is clear to 
-        // me how to fix these problems. The withdraw requires subtle changes 
-        // to its copying process, and the password system just needs to pass
-        // some conditional statments based on user input.
+        // make an endLoop() function
 
-        boolean running = true;
         Safe safe;
         int safeChoice = -1;
         int forbiddenOption = 0;
@@ -80,7 +74,6 @@ public class SafeRunnable {
 
             switch (selected) {
                 case 0:
-                    running = false;
                     stop();
                     break; // necessary? lol
                 case 1:
@@ -130,6 +123,7 @@ public class SafeRunnable {
 
     public static void stop() {
         System.out.println("Thanks for stopping by! See you later");
+        running = false;
         System.exit(0);
     }
 
